@@ -1,0 +1,71 @@
+# GodMode9 "Lazarus3DS Prep Script"
+# Attempt to revive a bricked NAND with a donor CTRNAND
+# last changed: 20170826
+# author: AnalogMan
+
+# Requirements
+# Create a folder called 'donor' on the root of your SD card and copy
+# ticket_combo.db to it.
+
+# Before running this script make sure any stock titles are
+# restored if previously altered or injected and any unofficial NAND
+# titles like developer apps must be removed as well
+# ! This includes TWLoader !
+
+
+# Tell user what script does and ask for confirmation
+set ERRORMSG "Aborted by user."
+ask "This script prepares a 3DS for\nuse with the Lazarus3DS scripts.\nA NAND backup will be created first.\n \nContinue?"
+
+# Check for ticket.db
+set ERRORMSG "Combo ticket.db not found!"
+find 0:/donor/ticket_combo.db TICKETDB
+
+set ERRORMSG ""
+
+# Grant access permissions
+allow -a S:/nand.bin
+
+# Create NAND backup
+cp -w S:/nand_minsize.bin 0:/donor/nand_minsize.bin
+
+# Deletes id0 data folder
+rm -o -s 1:/data/$[SYSID0]
+
+# Deletes LocalFriendCodeSeed_A/B
+rm -o -s 1:/rw/sys/LocalFriendCodeSeed_A
+rm -o -s 1:/rw/sys/LocalFriendCodeSeed_B
+
+# Delete HWCAL to prevent stuck 3D slider on n3DS if this is run by a 2DS/n2DS
+rm -o -s 1:/ro/sys/HWCAL0.dat
+rm -o -s 1:/ro/sys/HWCAL1.dat
+
+# Inject combo ticket.db
+cp -w -n $[TICKETDB] 1:/dbs/ticket.db
+fixcmac 1:/dbs/ticket.db
+
+# Clean TWLP Pictures
+rm -o -s 3:/photo/DCIM
+
+# Clean TWLN Sounds
+rm -o -s 2:/shared2/0000
+
+# Remove Luma3DS
+rm -o -s 1:/rw/luma
+rm -o -s 1:/boot.firm
+rm -o -s 1:/boot.firm.bak
+
+# Create donor files
+cp -w -h S:/ctrnand_full.bin 0:/donor/ctrnand_full.bin
+cp -w -h S:/nand_hdr.bin 0:/donor/nand_hdr.bin
+cp -w -h S:/twlmbr.bin 0:/donor/twlmbr.bin
+cp -w -h S:/twln.bin 0:/donor/twln.bin
+cp -w -h S:/twlp.bin 0:/donor/twlp.bin
+cp -w -h S:/sector0x96.bin 0:/donor/sector0x96.bin
+
+# Wrap up
+echo "Donor files created successfully!\n \nNow restoring NAND backup."
+cp -w -n 0:/donor/nand_minsize.bin S:/nand_minsize.bin
+rm 0:/donor/nand_minsize.bin
+rm $[TICKETDB]
+echo "All done! Files located in 0:/donor/"

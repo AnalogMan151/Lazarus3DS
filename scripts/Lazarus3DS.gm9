@@ -1,0 +1,205 @@
+# GodMode9 "Lazarus3DS Script"
+# Attempt to revive a bricked NAND with a donor CTRNAND
+# last changed: 20170827
+# author: AnalogMan
+
+# Tell user what script does and ask for confirmation
+set ERRORMSG "Aborted by user."
+ask "This script revives bricked consoles and\nattempts to recover what data it can.\n \nOnly use this script on consoles\nthat will not boot.\n \nContinue?"
+
+# Check that proper files exist
+# Looks for donor ctrnand_full.bin file with naming scheme:
+# ctrnand_[o/n]3ds_[usa/eur/jpn]_[retail/dev].bin
+
+set ERRORMSG "CTRNAND file not found!"
+find 0:/pit/ctrnand_?3ds_???_*.bin CTRNAND
+
+set ERRORMSG "NAND_HDR not found!"
+find 0:/pit/hdr_?3ds_???_*.bin HDR
+
+set ERRORMSG "TWLMBR not found!"
+find 0:/pit/twlmbr.bin TWLMBR
+
+set ERRORMSG "TWLN not found!"
+find 0:/pit/twln_?3ds_???_*.bin TWLN
+
+set ERRORMSG "TWLP not found!"
+find 0:/pit/twlp_?3ds_???_*.bin TWLP
+
+set ERRORMSG "SIGHAX_HDR not found!"
+find 0:/pit/sighax_hdr_*.bin SIGHAX
+
+# Looks for boot9strap.bin or boot9strap_dev.bin
+set ERRORMSG "Boot9Strap file not found!"
+find 0:/pit/boot9stra*.firm B9S
+
+# Looks for sector0x96.bin
+set ERRORMSG "sector0x96.bin not found!"
+find 0:/pit/sector0x9*.bin SECRET
+
+set ERRORMSG "Cannot mount NAND. Data unrecoverable.\n \nRun Lazarus3DS-Emergency"
+imgmount S:/nand.bin
+imgumount
+
+# Prompt for permission
+set ERRORMSG "Aborted by user."
+allow -a S:/nand.bin
+
+echo "Checking SHA hashes"
+
+# Check SHA on required files
+set ERRORMSG "SHA check failed on CTRNAND file"
+sha $[CTRNAND] $[CTRNAND].sha
+
+set ERRORMSG "SHA check failed on NAND_HDR file"
+sha $[HDR] $[HDR].sha
+
+set ERRORMSG "SHA check failed on TWLMBR file"
+sha $[TWLMBR] $[TWLMBR].sha
+
+set ERRORMSG "SHA check failed on TWLN file"
+sha $[TWLN] $[TWLN].sha
+
+set ERRORMSG "SHA check failed on TWLP file"
+sha $[TWLP] $[TWLP].sha
+
+set ERRORMSG "SHA check failed on SIGHAX file"
+sha $[SIGHAX] $[SIGHAX].sha
+
+set ERRORMSG "SHA check failed on Boot9Strap file"
+sha $[B9S] $[B9S].sha
+
+set ERRORMSG "SHA check failed on sector0x96.bin file"
+sha $[SECRET] $[SECRET].sha
+
+set ERRORMSG ""
+
+echo "Attempting to backup personal data"
+
+# Attempt to salvage what can be from bricked device
+# Copying files needed to read and play already installed content on SD
+cp -w -o -s -n 1:/private/movable.sed 0:/pit/movable.sed
+cp -w -o -s -n 1:/dbs/ticket.db 0:/pit/ticket.db
+
+# Attempting to copy SecureInfo if present
+cp -w -o -s -n 1:/rw/sys/SecureInfo_A 0:/pit/SecureInfo_A
+cp -w -o -s -n 1:/rw/sys/SecureInfo_B 0:/pit/SecureInfo_B
+cp -w -o -s -n 1:/rw/sys/SecureInfo_C 0:/pit/SecureInfo_C
+
+# Attempting to copy sysdata files to SD for restoring later
+cp -w -o -s -n 1:/data/$[SYSID0]/sysdata/00010017/00000000 0:/pit/configsave.bin
+cp -w -o -s -n 1:/data/$[SYSID0]/sysdata/00010032/00000000 0:/pit/friendsave.bin
+cp -w -o -s -n 1:/data/$[SYSID0]/sysdata/0001000f/00000000 0:/pit/seedsave.bin
+cp -w -o -s -n 1:/data/$[SYSID0]/sysdata/00010022/00000000 0:/pit/activitylog.bin
+
+# Get system app sys data
+find -o -s 1:/data/$[SYSID0]/sysdata/000202?8 MIIPLAZA
+set MIIPLAZA $[MIIPLAZA]/00000000
+cp -w -o -s -n $[MIIPLAZA] 0:/pit/miiplaza.bin
+find -o -s 1:/data/$[SYSID0]/sysdata/000202?d FACERAIDERS
+set FACERAIDERS $[FACERAIDERS]/00000000
+cp -w -o -s -n $[FACERAIDERS] 0:/pit/faceraiders.bin
+find -o -s 1:/data/$[SYSID0]/sysdata/000202?e ARGAMES
+set ARGAMES $[ARGAMES]/00000000
+cp -w -o -s -n $[ARGAMES] 0:/pit/argames.bin
+
+# Attempting to copy extdata files to SD for restoring later
+cp -w -s -o -n 1:/data/$[SYSID0]/extdata/00048000/f0000001 0:/pit/01 # Photos
+cp -w -s -o -n 1:/data/$[SYSID0]/extdata/00048000/f0000002 0:/pit/02 # Sounds
+cp -w -s -o -n 1:/data/$[SYSID0]/extdata/00048000/f000000b 0:/pit/0b # MiiMaker, Game Coins, etc.
+
+# Attempting to copy HWCAL files
+cp -w -o -s -n 1:/ro/sys/HWCAL0.dat 0:/pit/HWCAL0.dat
+cp -w -o -s -n 1:/ro/sys/HWCAL1.dat 0:/pit/HWCAL1.dat
+
+# Attempting to copy TWLP Photos
+cp -w -o -s -n 3:/photo/DCIM 0:/pit/DCIM
+
+# Attempting to copy TWL Sounds
+cp -w -o -s -n 2:/shared2/0000 0:/pit/sounds.bin
+
+# Skipping LocalFriendCodeSeed_B as it's regenerated upon boot
+
+echo "Fixing NAND"
+
+# Fix NAND_HDR
+cp -w -n $[HDR] S:/nand.bin
+
+# Sighax NAND_HDR
+cp -w -n $[SIGHAX] S:/nand_hdr.bin
+
+# Fix TWLMBR
+cp -w -n $[TWLMBR] S:/twlmbr.bin
+
+# Restore TWLN
+cp -w -n $[TWLN] S:/twln.bin
+
+# Restore TWLP
+cp -w -n $[TWLP] S:/twlp.bin
+
+# Copy donor CTRNAND image
+cp -w -n $[CTRNAND] S:/ctrnand_full.bin
+
+echo "Attempting to restore recovered data"
+
+# Attempt to restore recovered data
+cp -w -o -s -n 0:/pit/movable.sed 1:/private/movable.sed
+cp -w -o -s -n 0:/pit/ticket.db 1:/dbs/ticket.db
+cp -w -o -s -n 0:/pit/SecureInfo_A 1:/rw/sys/SecureInfo_A
+cp -w -o -s -n 0:/pit/SecureInfo_B 1:/rw/sys/SecureInfo_B
+cp -w -o -s -n 0:/pit/SecureInfo_C 1:/rw/sys/SecureInfo_C
+cp -w -o -s -n 0:/pit/seedsave.bin 1:/data/$[SYSID0]/sysdata/0001000f/00000000
+cp -w -o -s -n 0:/pit/configsave.bin 1:/data/$[SYSID0]/sysdata/00010017/00000000
+cp -w -o -s -n 0:/pit/friendsave.bin 1:/data/$[SYSID0]/sysdata/00010032/00000000
+cp -w -o -s -n 0:/pit/activitylog.bin 1:/data/$[SYSID0]/sysdata/00010022/00000000
+
+# Can't tell which region the console is, so copying this data to all three regions
+cp -w -o -s -n 0:/pit/miiplaza.bin 1:/data/$[SYSID0]/sysdata/00020208/00000000
+cp -w -o -s -n 0:/pit/miiplaza.bin 1:/data/$[SYSID0]/sysdata/00020218/00000000
+cp -w -o -s -n 0:/pit/miiplaza.bin 1:/data/$[SYSID0]/sysdata/00020228/00000000
+cp -w -o -s -n 0:/pit/faceraiders.bin 1:/data/$[SYSID0]/sysdata/0002020d/00000000
+cp -w -o -s -n 0:/pit/faceraiders.bin 1:/data/$[SYSID0]/sysdata/0002021d/00000000
+cp -w -o -s -n 0:/pit/faceraiders.bin 1:/data/$[SYSID0]/sysdata/0002022d/00000000
+cp -w -o -s -n 0:/pit/argames.bin 1:/data/$[SYSID0]/sysdata/0002020e/00000000
+cp -w -o -s -n 0:/pit/argames.bin 1:/data/$[SYSID0]/sysdata/0002021e/00000000
+cp -w -o -s -n 0:/pit/argames.bin 1:/data/$[SYSID0]/sysdata/0002022e/00000000
+
+# Restoring ext data
+cp -w -o -s -n 0:/pit/01 1:/data/$[SYSID0]/extdata/00048000/f0000001 # Photos
+cp -w -o -s -n 0:/pit/02 1:/data/$[SYSID0]/extdata/00048000/f0000002 # Sounds
+cp -w -o -s -n 0:/pit/0b 1:/data/$[SYSID0]/extdata/00048000/f000000b # MiiMaker, Game Coins, etc.
+
+# Restoring HWCAL files
+cp -w -s -s -n 1:/ro/sys/HWCAL0.dat 0:/pit/HWCAL0.dat
+cp -w -s -s -n 1:/ro/sys/HWCAL1.dat 0:/pit/HWCAL1.dat
+
+# Restoring TWLP photos
+cp -w -o -s -n 0:/pit/DCIM 3:/photo/DCIM
+
+# Restoring TWL Sounds
+cp -w -o -s -n 0:/pit/sounds.bin 2:/shared2/0000
+
+# Fixing CMACs
+fixcmac 1:/dbs
+fixcmac 1:/data
+fixcmac 1:/private
+
+# Injecting sighax into firm0 & firm1
+set ERRORMSG "Unable to inject boot9strap!\n \nRun SafeB9SInstaller after."
+cp -w -o -n $[B9S] S:/firm0.bin
+cp -w -o -n $[B9S] S:/firm1.bin
+
+# Fixing Secret Sector
+cp -w $[SECRET] S:/sector0x96.bin
+
+# Wrap up
+cp -w -o -s 0:/boot.firm 0:/luma/payloads/GodMode9.firm
+mv -w -o -s 0:/boot.firm 1:/rw/luma/payloads/GodMode9.firm
+cp -w -o -s 0:/luma.firm 0:/boot.firm
+mv -w -o -s 0:/luma.firm 1:/boot.firm
+rm -o -s 0:/pit
+rm -o -s 0:/gm9/scripts/Lazarus3DS.gm9
+rm -o -s 0:/gm9/scripts/Lazarus3DS-Emergency.gm9
+set ERRORMSG "Reboot canceled."
+ask "Revive complete. Reboot now?"
+reboot
