@@ -38,6 +38,6 @@ n3DS consoles may have poor quality 3D following the Lazarus3DS-Emergency script
 If you would like to create donor files for use with this script, please see the Lazarus3DS-Prep script and the notes contained within it for instructions.
 
 ##### Credits
-Special thanks go to @d0k3 for the splendid tool GodMode9 and intimate knowledge of the NAND layout and signature verifications, without which this wouldn't be possible.
+Special thanks go to [d0k3](https://gbatemp.net/members/d0k3.29073/) for the splendid tool GodMode9 and intimate knowledge of the NAND layout and signature verifications, without which this wouldn't be possible.
 
 Also thanks to [mvmiranda](https://gbatemp.net/members/mvmiranda.338095/) of GBATemp forums for being my first guinea pig and first successful resurrection by this script and [xeonhawk](https://gbatemp.net/members/xeonhawk.356731/) for n3DS and 3D testing on an emergency revived console.
