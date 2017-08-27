@@ -35,7 +35,7 @@ Consoles revived in this fashion will not be able to uninstall CFW. Uninstalling
 
 n3DS consoles may have poor quality 3D following the Lazarus3DS-Emergency script. Use Super-Stable 3D Calibration in System Settings to rectify for now.
 
-If you would like to create donors file for use with this script, please see the Lazarus3DS-Prep script and the notes contained within it for instructions.
+If you would like to create donor files for use with this script, please see the Lazarus3DS-Prep script and the notes contained within it for instructions.
 
 ##### Credits
 Special thanks go to @d0k3 for the splendid tool GodMode9 and intimate knowledge of the NAND layout and signature verifications, without which this wouldn't be possible.
