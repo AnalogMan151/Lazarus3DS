@@ -5,15 +5,15 @@ A set of GodMode9 scripts to restore bricked 3DS consoles. Named after the [Laza
 1. A method to boot GodMode9.firm, be that NTRBootHax, hard mod, or pre-installed hack.
 
 2. The following files:
-  1. Prepared donor `ctrnand.bin`, `nand_hdr.bin`, `twln.bin` & `twlp.bin` files & SHAs for your console (o3DS / n3DS + USA / EUR / JPN + retail / dev).
+    1. Prepared donor `ctrnand.bin`, `nand_hdr.bin`, `twln.bin` & `twlp.bin` files & SHAs for your console (o3DS / n3DS + USA / EUR / JPN + retail / dev).
 
-  2. A clean `sector0x96.bin`, `boot9strap.bin`, `sighax_hdr.bin` & SHA for your type of console (retail / dev).
+    2. A clean `sector0x96.bin`, `boot9strap.bin`, `sighax_hdr.bin` & SHA for your type of console (retail / dev).
 
-  3. A copy of `twlmbr.bin` & SHA.
+    3. A copy of `twlmbr.bin` & SHA.
 3. A copy of Luma3DS named as `luma.firm` & GodMode9 1.3.4+ named as `boot.firm`.
 
 ### Setup
-1. Copy the the files listed in Requirements:2 for your console type and region plus their SHA files to a folder on the root of your SD card called `pit`.
+1. Copy the the files listed in Requirements (section 2) for your console type and region plus their SHA files to a folder on the root of your SD card called `pit`.
 
 2. Copy `Lazarus3DS.gm9` & `Lazarus3DS-Emergency.gm9` to your `SD:/gm9/scripts/` folder.
 
