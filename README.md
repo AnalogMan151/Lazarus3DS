@@ -28,7 +28,7 @@ A set of GodMode9 scripts to restore bricked 3DS consoles. Named after the [Laza
 
 3. Provide input to unlock sysNAND writing and wait while the files are verified against their SHAs (_**if presented with a message to run Lazarus3DS-Emergency instead, go ahead and do so**_).
 
-4. Once `Lazarus3DS-1` or `Lazarus3DS-Emergency` finishes the script will make Luma3DS the new boot.firm, copy Luma3DS to NAND, install boot9strap, remove all Lazarus3DS support files and restart the 3DS.
+4. Once `Lazarus3DS` or `Lazarus3DS-Emergency` finishes the script will make Luma3DS the new boot.firm, copy Luma3DS to NAND, install boot9strap, remove all Lazarus3DS support files and restart the 3DS.
 
 ##### Notes
 Consoles revived in this fashion will not be able to uninstall CFW. Uninstalling CFW will render the console unable to boot once more.
