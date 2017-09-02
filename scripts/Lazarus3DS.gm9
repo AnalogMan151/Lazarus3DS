@@ -15,16 +15,16 @@ set ERRORMSG "CTRNAND file not found!"
 find 0:/pit/ctrnand_?3ds_???_*.bin CTRNAND
 
 set ERRORMSG "NAND_HDR not found!"
-find 0:/pit/hdr_?3ds_???_*.bin HDR
+find 0:/pit/hdr_?3ds_all_*.bin HDR
 
 set ERRORMSG "TWLMBR not found!"
-find 0:/pit/twlmbr.bin TWLMBR
+find 0:/pit/twlmbr_*.bin TWLMBR
 
 set ERRORMSG "TWLN not found!"
-find 0:/pit/twln_?3ds_???_*.bin TWLN
+find 0:/pit/twln_*.bin TWLN
 
 set ERRORMSG "TWLP not found!"
-find 0:/pit/twlp_?3ds_???_*.bin TWLP
+find 0:/pit/twlp_*.bin TWLP
 
 set ERRORMSG "SIGHAX_HDR not found!"
 find 0:/pit/sighax_hdr_*.bin SIGHAX
