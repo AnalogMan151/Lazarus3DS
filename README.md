@@ -5,17 +5,17 @@ A set of GodMode9 scripts to restore bricked 3DS consoles. Named after the [Laza
 1. A method to boot GodMode9.firm, be that NTRBootHax, hard mod, or pre-installed hack.
 
 2. The following files:
-    1. Prepared donor `ctrnand.bin`, `nand_hdr.bin`, `twln.bin` & `twlp.bin` files & SHAs for your console (o3DS / n3DS + USA / EUR / JPN + retail / dev).
+    1. Prepared donor `ctrnand.bin`, `nand_hdr.bin`, `twln.bin`, `twlp.bin` files & SHAs for your console (o3DS / n3DS + USA / EUR / JPN + retail / dev).
 
     2. A clean `sector0x96.bin`, `boot9strap.bin`, `sighax_hdr.bin` & SHA for your type of console (retail / dev).
 
     3. A copy of `twlmbr.bin` & SHA.
-3. A copy of Luma3DS named as `luma.firm` & GodMode9 1.3.4+ named as `boot.firm`.
+3. A copy of Luma3DS named as `luma.firm` & GodMode9 1.3.5+ named as `boot.firm`.
 
 ### Setup
 1. Copy the the files listed in Requirements (section 2) for your console type and region plus their SHA files to a folder on the root of your SD card called `pit`.
 
-2. Copy `Lazarus3DS.gm9` & `Lazarus3DS-Emergency.gm9` to your `SD:/gm9/scripts/` folder.
+2. Copy `Lazarus3DS.gm9` to your `SD:/gm9/scripts/` folder.
 
 4. Copy Luma3DS as `luma.firm` to the root of your SD card.
 
@@ -26,9 +26,9 @@ A set of GodMode9 scripts to restore bricked 3DS consoles. Named after the [Laza
 
 2. Press HOME, go to `Scripts` and run `Lazarus3DS`.
 
-3. Provide input to unlock sysNAND writing and wait while the files are verified against their SHAs (_**if presented with a message to run Lazarus3DS-Emergency instead, go ahead and do so**_).
+3. Provide input to unlock sysNAND writing and wait while the files are verified against their SHAs.
 
-4. Once `Lazarus3DS-1` or `Lazarus3DS-Emergency` finishes the script will make Luma3DS the new boot.firm, copy Luma3DS to NAND, install boot9strap, remove all Lazarus3DS support files and restart the 3DS.
+4. Once `Lazarus3DS` finishes the script will make Luma3DS the new boot.firm, copy Luma3DS to NAND, install boot9strap, remove all Lazarus3DS support files and restart the 3DS.
 
 ##### Notes
 Consoles revived in this fashion will not be able to uninstall CFW. Uninstalling CFW will render the console unable to boot once more.

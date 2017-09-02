@@ -37,13 +37,9 @@ find 0:/pit/boot9stra*.firm B9S
 set ERRORMSG "sector0x96.bin not found!"
 find 0:/pit/sector0x9*.bin SECRET
 
-set ERRORMSG "Cannot mount NAND. Data unrecoverable.\n \nRun Lazarus3DS-Emergency"
-imgmount S:/nand.bin
-imgumount
-
 # Prompt for permission
 set ERRORMSG "Aborted by user."
-allow -a S:/nand.bin
+allow -a S:
 
 echo "Checking SHA hashes"
 
@@ -104,19 +100,22 @@ set ARGAMES $[ARGAMES]/00000000
 cp -w -o -s -n $[ARGAMES] 0:/pit/argames.bin
 
 # Attempting to copy extdata files to SD for restoring later
-cp -w -s -o -n 1:/data/$[SYSID0]/extdata/00048000/f0000001 0:/pit/01 # Photos
-cp -w -s -o -n 1:/data/$[SYSID0]/extdata/00048000/f0000002 0:/pit/02 # Sounds
-cp -w -s -o -n 1:/data/$[SYSID0]/extdata/00048000/f000000b 0:/pit/0b # MiiMaker, Game Coins, etc.
+cp -w -o -s -n 1:/data/$[SYSID0]/extdata/00048000/f0000001 0:/pit/01 # Photos
+cp -w -o -s -n 1:/data/$[SYSID0]/extdata/00048000/f0000002 0:/pit/02 # Sounds
+cp -w -o -s -n 1:/data/$[SYSID0]/extdata/00048000/f000000b 0:/pit/0b # MiiMaker, Game Coins, etc.
 
 # Attempting to copy HWCAL files
 cp -w -o -s -n 1:/ro/sys/HWCAL0.dat 0:/pit/HWCAL0.dat
 cp -w -o -s -n 1:/ro/sys/HWCAL1.dat 0:/pit/HWCAL1.dat
 
-# Attempting to copy TWLP Photos
-cp -w -o -s -n 3:/photo/DCIM 0:/pit/DCIM
+# Attempting to copy TWL titles
+cp -w -o -s -n 2:/title/00030004 0:/pit/00030004
 
 # Attempting to copy TWL Sounds
 cp -w -o -s -n 2:/shared2/0000 0:/pit/sounds.bin
+
+# Attempting to copy TWLP Photos
+cp -w -o -s -n 3:/photo/DCIM 0:/pit/DCIM
 
 # Skipping LocalFriendCodeSeed_B as it's regenerated upon boot
 
@@ -170,14 +169,17 @@ cp -w -o -s -n 0:/pit/02 1:/data/$[SYSID0]/extdata/00048000/f0000002 # Sounds
 cp -w -o -s -n 0:/pit/0b 1:/data/$[SYSID0]/extdata/00048000/f000000b # MiiMaker, Game Coins, etc.
 
 # Restoring HWCAL files
-cp -w -s -s -n 1:/ro/sys/HWCAL0.dat 0:/pit/HWCAL0.dat
-cp -w -s -s -n 1:/ro/sys/HWCAL1.dat 0:/pit/HWCAL1.dat
+cp -w -o -s -n 0:/pit/HWCAL0.dat 1:/ro/sys/HWCAL0.dat
+cp -w -o -s -n 0:/pit/HWCAL1.dat 1:/ro/sys/HWCAL1.dat
 
-# Restoring TWLP photos
-cp -w -o -s -n 0:/pit/DCIM 3:/photo/DCIM
+# Restoring TWL titles
+cp -w -o -s -n 0:/pit/00030004 2:/title/00030004
 
 # Restoring TWL Sounds
 cp -w -o -s -n 0:/pit/sounds.bin 2:/shared2/0000
+
+# Restoring TWLP photos
+cp -w -o -s -n 0:/pit/DCIM 3:/photo/DCIM
 
 # Fixing CMACs
 fixcmac 1:/dbs
@@ -197,9 +199,9 @@ cp -w -o -s 0:/boot.firm 0:/luma/payloads/GodMode9.firm
 mv -w -o -s 0:/boot.firm 1:/rw/luma/payloads/GodMode9.firm
 cp -w -o -s 0:/luma.firm 0:/boot.firm
 mv -w -o -s 0:/luma.firm 1:/boot.firm
+set ERRORMSG "Reboot canceled."
+ask "Revive complete. Remove files & reboot now?"
 rm -o -s 0:/pit
 rm -o -s 0:/gm9/scripts/Lazarus3DS.gm9
-rm -o -s 0:/gm9/scripts/Lazarus3DS-Emergency.gm9
-set ERRORMSG "Reboot canceled."
-ask "Revive complete. Reboot now?"
+
 reboot

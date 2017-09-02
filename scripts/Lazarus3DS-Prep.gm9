@@ -1,6 +1,6 @@
 # GodMode9 "Lazarus3DS Prep Script"
 # Attempt to revive a bricked NAND with a donor CTRNAND
-# last changed: 20170827
+# last changed: 20170902
 # author: AnalogMan
 
 # Requirements
@@ -23,49 +23,54 @@ find 0:/donor/ticket_combo.db TICKETDB
 
 set ERRORMSG ""
 
-# Grant access permissions
-allow -a S:/nand.bin
+# Create donor files
+cp -w    S:/ctrnand_full.bin    0:/donor/ctrnand_full.bin
+cp -w -h S:/nand_hdr.bin        0:/donor/nand_hdr.bin
+cp -w -h S:/twlmbr.bin          0:/donor/twlmbr.bin
+cp -w    S:/twln.bin            0:/donor/twln.bin
+cp -w    S:/twlp.bin            0:/donor/twlp.bin
+cp -w -h S:/sector0x96.bin      0:/donor/sector0x96.bin
 
-# Create NAND backup
-cp -w S:/nand_minsize.bin 0:/donor/nand_minsize.bin
-
+# Clean CTRNAND
+imgmount 0:/donor/ctrnand_full.bin
 # Deletes id0 data folder
-rm -o -s 1:/data/$[SYSID0]
+rm -o -s 7:/data/$[SYSID0]
+# Remove Luma3DS
+rm -o -s 7:/rw/luma
+rm -o -s 7:/boot.firm
+rm -o -s 7:/boot.firm.bak
 
 # Deletes LocalFriendCodeSeed_A/B
-rm -o -s 1:/rw/sys/LocalFriendCodeSeed_A
-rm -o -s 1:/rw/sys/LocalFriendCodeSeed_B
+rm -o -s 7:/rw/sys/LocalFriendCodeSeed_A
+rm -o -s 7:/rw/sys/LocalFriendCodeSeed_B
 
 # Delete HWCAL to prevent stuck 3D slider on n3DS if this is run by a 2DS/n2DS
-rm -o -s 1:/ro/sys/HWCAL0.dat
-rm -o -s 1:/ro/sys/HWCAL1.dat
+rm -o -s 7:/ro/sys/HWCAL0.dat
+rm -o -s 7:/ro/sys/HWCAL1.dat
 
 # Inject combo ticket.db
-cp -w -n $[TICKETDB] 1:/dbs/ticket.db
-fixcmac 1:/dbs/ticket.db
+cp -w -n $[TICKETDB] 7:/dbs/ticket.db
+imgumount
 
-# Clean TWLP Pictures
-rm -o -s 3:/photo/DCIM
-
+# Clean TWLN
+imgmount 0:/donor/twln.bin
+# Clean TWL Titles
+rm -o -s 7:/title/00030004
 # Clean TWLN Sounds
-rm -o -s 2:/shared2/0000
+rm -o -s 7:/shared2/0000
+imgumount
 
-# Remove Luma3DS
-rm -o -s 1:/rw/luma
-rm -o -s 1:/boot.firm
-rm -o -s 1:/boot.firm.bak
+# Clean TWLP
+imgmount 0:/donor/twlp.bin
+# Clean TWLP Pictures
+rm -o -s 7:/photo/DCIM
+imgumount
 
-# Create donor files
-cp -w -h S:/ctrnand_full.bin 0:/donor/ctrnand_full.bin
-cp -w -h S:/nand_hdr.bin 0:/donor/nand_hdr.bin
-cp -w -h S:/twlmbr.bin 0:/donor/twlmbr.bin
-cp -w -h S:/twln.bin 0:/donor/twln.bin
-cp -w -h S:/twlp.bin 0:/donor/twlp.bin
-cp -w -h S:/sector0x96.bin 0:/donor/sector0x96.bin
+# Calculate missing SHAs
+sha 0:/donor/ctrnand_full.bin NULL
+sha 0:/donor/twln.bin NULL
+sha 0:/donor/twlp.bin NULL
 
 # Wrap up
-echo "Donor files created successfully!\n \nNow restoring NAND backup."
-cp -w -n 0:/donor/nand_minsize.bin S:/nand_minsize.bin
-rm 0:/donor/nand_minsize.bin
 rm $[TICKETDB]
 echo "All done! Files located in 0:/donor/"
