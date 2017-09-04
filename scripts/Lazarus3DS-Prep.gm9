@@ -5,7 +5,7 @@
 
 # Requirements
 # Create a folder called 'donor' on the root of your SD card and copy
-# ticket_combo.db to it.
+# ticket_combo.db & serial.bin to it.
 
 # Before running this script make sure any stock titles are
 # restored if previously altered or injected and any unofficial NAND
@@ -15,11 +15,14 @@
 
 # Tell user what script does and ask for confirmation
 set ERRORMSG "Aborted by user."
-ask "This script prepares a 3DS for\nuse with the Lazarus3DS scripts.\nA NAND backup will be created first.\n \nContinue?"
+ask "This script prepares a 3DS for\nuse with the Lazarus3DS scripts.\n \nContinue?"
 
 # Check for ticket.db
 set ERRORMSG "Combo ticket.db not found!"
 find 0:/donor/ticket_combo.db TICKETDB
+
+set ERRORMSG "Blank serial.bin not found!"
+find 0:/donor/serial.bin NULL
 
 set ERRORMSG ""
 
@@ -44,6 +47,13 @@ rm -o -s 7:/boot.firm.bak
 rm -o -s 7:/rw/sys/LocalFriendCodeSeed_A
 rm -o -s 7:/rw/sys/LocalFriendCodeSeed_B
 
+# Remove SecureInfo_C in the event of region change
+rm -o -s 7:/rw/sys/SecureInfo_C
+
+# Find and patch out serial from remaining SecureInfo
+find 7:/rw/sys/SecureInfo_? SECUREINFO
+inject 0:/donor/serial.bin@ $[SECUREINFO]@102
+
 # Delete HWCAL to prevent stuck 3D slider on n3DS if this is run by a 2DS/n2DS
 rm -o -s 7:/ro/sys/HWCAL0.dat
 rm -o -s 7:/ro/sys/HWCAL1.dat
@@ -67,10 +77,12 @@ rm -o -s 7:/photo/DCIM
 imgumount
 
 # Calculate missing SHAs
-sha 0:/donor/ctrnand_full.bin NULL
-sha 0:/donor/twln.bin NULL
-sha 0:/donor/twlp.bin NULL
+shaget 0:/donor/ctrnand_full.bin 0:/donor/ctrnand_full.bin.sha
+shaget 0:/donor/twln.bin 0:/donor/twln.bin.sha
+shaget 0:/donor/twlp.bin 0:/donor/twlp.bin.sha
 
 # Wrap up
+rm -o -s 0:/gm9/scripts/Lazarus-Prep.gm9
 rm $[TICKETDB]
+rm 0:/donor/serial.bin
 echo "All done! Files located in 0:/donor/"
