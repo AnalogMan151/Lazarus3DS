@@ -1,11 +1,11 @@
 # GodMode9 "Lazarus3DS Prep Script"
 # Attempt to revive a bricked NAND with a donor CTRNAND
-# last changed: 20170902
+# last changed: 20170909
 # author: AnalogMan
 
 # Requirements
 # Create a folder called 'donor' on the root of your SD card and copy
-# ticket_combo.db & serial.bin to it.
+# ticket_combo.db, movable.sed & serial.bin to it.
 
 # Before running this script make sure any stock titles are
 # restored if previously altered or injected and any unofficial NAND
@@ -24,6 +24,9 @@ find 0:/donor/ticket_combo.db TICKETDB
 set ERRORMSG "Blank serial.bin not found!"
 find 0:/donor/serial.bin NULL
 
+set ERRORMSG "0-key movable.sed not found!"
+find 0:/donor/movable.sed NULL
+
 set ERRORMSG ""
 
 # Create donor files
@@ -36,8 +39,10 @@ cp -w -h S:/sector0x96.bin      0:/donor/sector0x96.bin
 
 # Clean CTRNAND
 imgmount 0:/donor/ctrnand_full.bin
+
 # Deletes id0 data folder
 rm -o -s 7:/data/$[SYSID0]
+
 # Remove Luma3DS
 rm -o -s 7:/rw/luma
 rm -o -s 7:/boot.firm
@@ -54,6 +59,9 @@ rm -o -s 7:/rw/sys/SecureInfo_C
 find 7:/rw/sys/SecureInfo_? SECUREINFO
 inject 0:/donor/serial.bin@ $[SECUREINFO]@102
 
+# Replace movable.sed with 0-key version
+cp -w -n 0:/donor/movable.sed 7:/private/movable.sed
+
 # Delete HWCAL to prevent stuck 3D slider on n3DS if this is run by a 2DS/n2DS
 rm -o -s 7:/ro/sys/HWCAL0.dat
 rm -o -s 7:/ro/sys/HWCAL1.dat
@@ -64,14 +72,17 @@ imgumount
 
 # Clean TWLN
 imgmount 0:/donor/twln.bin
+
 # Clean TWL Titles
 rm -o -s 7:/title/00030004
+
 # Clean TWLN Sounds
 rm -o -s 7:/shared2/0000
 imgumount
 
 # Clean TWLP
 imgmount 0:/donor/twlp.bin
+
 # Clean TWLP Pictures
 rm -o -s 7:/photo/DCIM
 imgumount
@@ -85,4 +96,5 @@ shaget 0:/donor/twlp.bin 0:/donor/twlp.bin.sha
 rm -o -s 0:/gm9/scripts/Lazarus-Prep.gm9
 rm $[TICKETDB]
 rm 0:/donor/serial.bin
+rm 0:/donor/movable.sed
 echo "All done! Files located in 0:/donor/"

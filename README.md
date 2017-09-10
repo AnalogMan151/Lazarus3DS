@@ -10,7 +10,7 @@ A set of GodMode9 scripts to restore bricked 3DS consoles. Named after the [Laza
     2. A clean `sector0x96.bin`, `boot9strap.bin`, `sighax_hdr.bin` & SHA for your type of console (retail / dev).
 
     3. A copy of `twlmbr.bin` & SHA.
-3. A copy of Luma3DS named as `luma.firm` & GodMode9 1.3.5+ named as `boot.firm`.
+3. A copy of Luma3DS named as `luma.firm` & GodMode9 v1.3.6+ named as `boot.firm`.
 
 ### Setup
 1. Copy the the files listed in Requirements (section 2) for your console type and region plus their SHA files to a folder on the root of your SD card called `pit`.

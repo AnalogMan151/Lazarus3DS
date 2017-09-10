@@ -1,6 +1,6 @@
 # GodMode9 "Lazarus3DS Script"
 # Attempt to revive a bricked NAND with a donor CTRNAND
-# last changed: 20170827
+# last changed: 20170909
 # author: AnalogMan
 
 # Tell user what script does and ask for confirmation
@@ -18,13 +18,13 @@ set ERRORMSG "NAND_HDR not found!"
 find 0:/pit/hdr_?3ds_all_*.bin HDR
 
 set ERRORMSG "TWLMBR not found!"
-find 0:/pit/twlmbr_*.bin TWLMBR
+find 0:/pit/twlmbr.bin TWLMBR
 
 set ERRORMSG "TWLN not found!"
 find 0:/pit/twln_*.bin TWLN
 
 set ERRORMSG "TWLP not found!"
-find 0:/pit/twlp_*.bin TWLP
+find 0:/pit/twlp.bin TWLP
 
 set ERRORMSG "SIGHAX_HDR not found!"
 find 0:/pit/sighax_hdr_*.bin SIGHAX
@@ -40,8 +40,6 @@ find 0:/pit/sector0x9*.bin SECRET
 # Prompt for permission
 set ERRORMSG "Aborted by user."
 allow -a S:
-
-echo "Checking SHA hashes"
 
 # Check SHA on required files
 set ERRORMSG "SHA check failed on CTRNAND file"
@@ -69,8 +67,6 @@ set ERRORMSG "SHA check failed on sector0x96.bin file"
 sha $[SECRET] $[SECRET].sha
 
 set ERRORMSG ""
-
-echo "Attempting to backup personal data"
 
 # Attempt to salvage what can be from bricked device
 # Copying files needed to read and play already installed content on SD
@@ -119,8 +115,6 @@ cp -w -o -s -n 3:/photo/DCIM 0:/pit/DCIM
 
 # Skipping LocalFriendCodeSeed_B as it's regenerated upon boot
 
-echo "Fixing NAND"
-
 # Fix NAND_HDR
 cp -w -n $[HDR] S:/nand.bin
 
@@ -138,8 +132,6 @@ cp -w -n $[TWLP] S:/twlp.bin
 
 # Copy donor CTRNAND image
 cp -w -n $[CTRNAND] S:/ctrnand_full.bin
-
-echo "Attempting to restore recovered data"
 
 # Attempt to restore recovered data
 cp -w -o -s -n 0:/pit/movable.sed 1:/private/movable.sed
